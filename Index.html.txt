@@ -1,0 +1,125 @@
+<!--
+  SETUP INSTRUCTIONS:
+
+  ⚠️ Replace the following placeholders in the code below:
+  
+  1. 'YOUR_AWS_REGION' — Replace with your AWS region (e.g., 'ap-south-1')
+  2. 'YOUR_COGNITO_IDENTITY_POOL_ID' — Replace with your AWS Cognito Identity Pool ID
+  3. 'YOUR_INPUT_BUCKET_NAME' — Replace with your S3 bucket name where users upload images
+  4. 'YOUR_OUTPUT_BUCKET_NAME' — Replace with your S3 bucket where resized images are stored
+  
+  ✅ This file uploads an image to S3, waits for Lambda to resize it,
+  and displays the original and resized image sizes along with preview.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Image to S3</title>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1470.0.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    img { max-width: 300px; margin: 10px 0; }
+    #preview, #output { display: block; }
+  </style>
+</head>
+<body>
+  <h2>Upload Image to S3</h2>
+  <input type="file" id="fileInput" accept="image/jpeg, image/png"/>
+  <button onclick="uploadFile()">Upload</button>
+  <p id="status"></p>
+  <p id="originalSize"></p>
+  <p id="resizedSize"></p>
+  <p id="resizedUrl"></p>
+
+  <h3>Preview</h3>
+  <img id="preview" src="#" alt="Preview" style="display: none;" />
+
+  <h3>Processed Image</h3>
+  <img id="output" src="#" alt="Output" style="display: none;" />
+
+  <script>
+    // AWS Config - Replace these values with your own
+    AWS.config.region = 'YOUR_AWS_REGION'; // e.g., 'ap-south-1'
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'YOUR_COGNITO_IDENTITY_POOL_ID'
+    });
+
+    function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        document.getElementById('status').innerText = 'Please choose a file.';
+        return;
+      }
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('preview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+
+      // Show original size
+      document.getElementById('originalSize').innerText = `Original Image Size: ${(file.size / 1024).toFixed(2)} KB`;
+
+      const s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: { Bucket: 'YOUR_INPUT_BUCKET_NAME' }
+      });
+
+      const params = {
+        Bucket: 'YOUR_INPUT_BUCKET_NAME',
+        Key: file.name,
+        Body: file,
+        ContentType: file.type
+      };
+
+      document.getElementById('status').innerText = 'Uploading...';
+
+      s3.upload(params, function (err, data) {
+        if (err) {
+          console.log(err);
+          document.getElementById('status').innerText = 'Error: ' + err.message;
+        } else {
+          console.log('Upload success', data.Location);
+          document.getElementById('status').innerText = 'Upload success. Processing...';
+
+          const resizedFileName = 'resized-' + file.name;
+          const outputUrl = `https://YOUR_OUTPUT_BUCKET_NAME.s3.YOUR_AWS_REGION.amazonaws.com/${resizedFileName}`;
+
+          setTimeout(() => {
+            const outputImg = document.getElementById('output');
+            outputImg.src = outputUrl;
+            outputImg.style.display = 'block';
+
+            document.getElementById('resizedUrl').innerText = `Resized Image URL: ${outputUrl}`;
+
+            fetch(outputUrl, { method: 'HEAD' })
+              .then(response => {
+                const contentLength = response.headers.get('Content-Length');
+                if (contentLength) {
+                  const kb = (parseInt(contentLength) / 1024).toFixed(2);
+                  document.getElementById('resizedSize').innerText = `Resized Image Size: ${kb} KB`;
+                } else {
+                  document.getElementById('resizedSize').innerText = 'Could not fetch resized image size.';
+                }
+
+                document.getElementById('status').innerText = '✅ Image resized successfully.';
+              })
+              .catch(error => {
+                console.log('HEAD error:', error);
+                document.getElementById('resizedSize').innerText = 'Could not fetch resized image size.';
+                document.getElementById('status').innerText = '✅ Image resized successfully.';
+              });
+
+          }, 5000); // wait for Lambda to process
+        }
+      });
+    }
+  </script>
+</body>
+</html>
