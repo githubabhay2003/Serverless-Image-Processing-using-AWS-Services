@@ -29,6 +29,7 @@ Users frequently need to **resize or compress images before uploading** to web s
                             | S3 (Output Bucket)|        | Amazon Cognito       |
                             |  image-resized    |        | Identity Pool for JS |
                             +-------------------+        +----------------------+
+```text
 ## 🚀 AWS Services Used
 
 * **Amazon S3:** Utilized for highly durable and scalable storage of both original and resized images.
