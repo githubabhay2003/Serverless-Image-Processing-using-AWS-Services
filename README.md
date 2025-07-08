@@ -1,24 +1,22 @@
-📸 Serverless Image Processing using AWS
+# 📸 Serverless Image Processing using AWS
 
-This project implements an end-to-end **serverless image processing pipeline** that resizes images automatically on upload using AWS services. It uses **Amazon S3**, **AWS Lambda**, **IAM**, and **Amazon Cognito** with a simple HTML/JavaScript frontend to demonstrate the architecture.
+This project implements an end-to-end **serverless image processing pipeline** that automatically resizes images upon upload using various AWS services. It leverages **Amazon S3** for storage, **AWS Lambda** for compute, **IAM** for secure access control, and **Amazon Cognito** for secure frontend authentication, all tied together with a simple HTML/JavaScript frontend.
 
 ---
 
 ## 🧩 Problem Statement
 
-Users frequently need to **resize or compress images before uploading** to web services. Doing this client-side or manually is inefficient.
+In many web applications, users need to upload images. However, requiring users to resize or compress images client-side or performing these operations manually can be inefficient and lead to poor user experience.
 
-**Goal:** Create a **serverless image processing service** using AWS which:
-- Accepts an image upload via a frontend
-- Automatically resizes the image using AWS Lambda
-- Stores the resized image in another S3 bucket
-- Provides visual feedback on both original and resized images (with size info)
+**Our Goal:** To create a robust and efficient **serverless image processing service** on AWS that:
+* Accepts image uploads securely via a web frontend.
+* Automatically triggers an AWS Lambda function to resize the uploaded image.
+* Stores the processed (resized) image in a separate S3 bucket.
+* Provides real-time visual feedback, including previewing the original image and displaying the processed image with size information.
 
 ---
-
 ## 🏗️ Architecture Diagram
 
-```text
 +-------------+        +---------------------+         +----------------------+
 |  Frontend   +------->+   S3 (Input Bucket) +-------->+     AWS Lambda       |
 | (HTML + JS) |        |  image-upload-bucket|         | Resize/compress img |
@@ -29,6 +27,8 @@ Users frequently need to **resize or compress images before uploading** to web s
                             | S3 (Output Bucket)|        | Amazon Cognito       |
                             |  image-resized    |        | Identity Pool for JS |
                             +-------------------+        +----------------------+
+
+
 ---
 ## 🚀 AWS Services Used
 
