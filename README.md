@@ -39,6 +39,7 @@ In many web applications, users need to upload images. However, requiring users 
 * **AWS SDK (JavaScript):** Integrated into the frontend to facilitate seamless interaction with Amazon S3.
 ---
 📂Folder Structure
+```
 serverless-image-processing-project/
 ├── lambda-pillow/
 │   └── lambda_function.py
@@ -47,6 +48,7 @@ serverless-image-processing-project/
 ├── docs/
 │   └── README.md
     └── architecture-diagram
+```
 ---
 
 ## 🛠️ Step-by-Step Process
