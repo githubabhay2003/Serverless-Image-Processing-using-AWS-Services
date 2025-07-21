@@ -16,7 +16,7 @@ In many web applications, users need to upload images. However, requiring users 
 
 ---
 ## 🏗️ Architecture Diagram
-
+```
 +-------------+        +---------------------+         +----------------------+
 |  Frontend   +------->+   S3 (Input Bucket) +-------->+     AWS Lambda       |
 | (HTML + JS) |        |  image-upload-bucket|         | Resize/compress img |
@@ -28,7 +28,7 @@ In many web applications, users need to upload images. However, requiring users 
                             |  image-resized    |        | Identity Pool for JS |
                             +-------------------+        +----------------------+
 
-
+```
 ---
 ## 🚀 AWS Services Used
 
